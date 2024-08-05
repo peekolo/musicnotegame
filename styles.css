@@ -5,14 +5,30 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-color: #000;
+    opacity: 1;
     font-family: Arial, sans-serif;
 }
 
 canvas {
-    border: 1px solid black;
+    border: 10px solid #00A0F0;
     background-color: white;
     margin-bottom: 20px;
+    z-index:99;
+}
+
+.backgrounddiv{
+    position: absolute;
+    top:0px;
+    left:0px;
+    bottom:0px;
+    right:0px;
+    background-color: #000000;
+    background-image: url('images/background2.jpeg');
+    background-repeat: no-repeat;
+    background-size:cover;
+    opacity: 0.5;
+    z-index:1;
 }
 
 #fireworksCanvas {
@@ -24,21 +40,68 @@ canvas {
     bottom:0;
     right:0;
     pointer-events: none;
+    z-index:100;
 }
 
 #choices {
     margin-bottom: 20px;
+    z-index:99;
+}
+
+#redalert{
+    position:absolute;
+    top:0px;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    background-color:#FF0000;
+    opacity:80%;
+    display:none;
+    z-index:100;
 }
 
 .choice-button {
-    margin: 0 10px;
-    padding: 10px 20px;
-    font-size: 16px;
+    margin: 0 20px;
+    padding: 20px 30px;
+    font-size: 2rem;
     cursor: pointer;
+    background-color: #FFFFFF;
 }
 
 #score {
-    font-size: 20px;
+    font-size: 5rem;
     font-weight: bold;
+    color: #FFFFFF;
+    padding:50px;
+    z-index:99;
 }
+
+.bottom-spacer{
+    padding: 80px 0px;
+}
+
+#rocketholder{
+    position:relative;
+    width:95%;
+    height:95%;
+}
+
+#rocket{
+    position:absolute;
+    bottom:0px;
+    right:30px;
+    height:20%;
+    content:url('images/rocket.png');
+    transition: bottom 0.5s ease;
+}
+
+.progressanimator{
+    position:absolute;
+    right:0px;
+    bottom:0px;
+    top:5px;
+    width:50%;
+    z-index:50;
+}
+
 
