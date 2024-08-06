@@ -14,6 +14,9 @@ window.onload = function() {
 
     const xoffset=400;
 
+    window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext;
+    const audioContext=new window.AudioContext();
+
     let score = 0;
 
     const notePositions = {
@@ -256,8 +259,8 @@ window.onload = function() {
         var fs=[0,277.18,311.13,349.23,369.99,415.30,466.16,523.25];
         var f=[246.94,261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25];
         //window.AudioContext = window.AudioContext || window.webkitAudioContext;
-        window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext;
-        var c=new window.AudioContext(),o=c.createOscillator(),a=c.createGain();
+        const c=audioContext;
+        var o=c.createOscillator(),a=c.createGain();
         var ts=0;
         o.frequency.value=getf(m[0]);
         o.connect(a).connect(c.destination);o.start(0);
