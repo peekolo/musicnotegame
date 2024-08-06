@@ -97,7 +97,7 @@ canvas {
 
 .progressanimator{
     position:absolute;
-    right:0px;
+    right:50px;
     bottom:0px;
     top:5px;
     width:50%;

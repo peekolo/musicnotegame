@@ -12,7 +12,7 @@ window.onload = function() {
     fireworksCanvas.width=window.innerWidth;
     fireworksCanvas.height=window.innerHeight;
 
-    const xoffset=400;
+    const xoffset=300;
 
     window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext;
     const audioContext=new window.AudioContext();
@@ -59,7 +59,7 @@ window.onload = function() {
         for (let i = 0; i < 5; i++) {
             ctx.beginPath();
             ctx.moveTo(50, staffTop + i * staffSpacing);
-            ctx.lineTo(750, staffTop + i * staffSpacing);
+            ctx.lineTo(550, staffTop + i * staffSpacing);
             ctx.stroke();
         }
     }
