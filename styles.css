@@ -40,12 +40,12 @@ canvas {
     bottom:0;
     right:0;
     pointer-events: none;
-    z-index:100;
+    z-index:110;
 }
 
 #choices {
     margin-bottom: 20px;
-    z-index:99;
+    z-index:100;
 }
 
 #redalert{
@@ -57,7 +57,7 @@ canvas {
     background-color:#FF0000;
     opacity:80%;
     display:none;
-    z-index:100;
+    z-index:200;
 }
 
 .choice-button {
@@ -73,7 +73,7 @@ canvas {
     font-weight: bold;
     color: #FFFFFF;
     padding:50px;
-    z-index:99;
+    z-index:98;
 }
 
 .bottom-spacer{
@@ -101,7 +101,7 @@ canvas {
     bottom:0px;
     top:5px;
     width:50%;
-    z-index:50;
+    z-index:99;
 }
 
 
