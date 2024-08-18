@@ -26,10 +26,11 @@ window.onload = function() {
     resizeCanvas();
 
     // Update canvas size on window resize
-    window.addEventListener('resize', resizeCanvas);
+    //window.addEventListener('resize', resizeCanvas);
 
 
-    const xoffset=300;
+    const staffTop=30;
+    const xoffset=160;
     const yStep=10;
 
     window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext;
@@ -56,24 +57,24 @@ window.onload = function() {
     }
 
     const noteC3Positions = {
-        'treble': 150,
-        'bass': 30
+        'treble': 130,
+        'bass': 10
     };
 
     const clefImages = {
-        treble: {path:assetpath+'/treble.png',dim:[60,40,50,120]},
-        bass: {path:assetpath+'/bass.png',dim:[60,47,42,85]},
+        treble: {path:assetpath+'/treble.png',dim:[20,20,50,120]},
+        bass: {path:assetpath+'/bass.png',dim:[20,27,42,85]},
     };
 
 
     function drawStaff() {
-        const staffTop = 50;
         const staffSpacing = yStep * 2;
+        
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < 5; i++) {
             ctx.beginPath();
-            ctx.moveTo(50, staffTop + i * staffSpacing);
-            ctx.lineTo(550, staffTop + i * staffSpacing);
+            ctx.moveTo(10, staffTop + i * staffSpacing);
+            ctx.lineTo(canvas.width-10, staffTop + i * staffSpacing);
             ctx.stroke();
         }
     }

@@ -31,6 +31,11 @@ canvas {
     z-index:1;
 }
 
+#musicCanvas{
+    width:90%;
+    max-width: 600px;
+}
+
 #fireworksCanvas {
     position: absolute;
     background-color: transparent;
@@ -44,6 +49,12 @@ canvas {
 }
 
 #choices {
+    max-width: 400px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
     margin-bottom: 20px;
     z-index:100;
 }
@@ -61,15 +72,15 @@ canvas {
 }
 
 .choice-button {
-    margin: 0 20px;
-    padding: 20px 30px;
+    padding: 0.8rem 1.2rem;
     font-size: 2rem;
     cursor: pointer;
     background-color: #FFFFFF;
 }
 
 #score {
-    font-size: 5rem;
+    display:block;
+    font-size: 3rem;
     font-weight: bold;
     color: #FFFFFF;
     padding:50px;
