@@ -14,14 +14,25 @@ window.onload = function() {
     const ctx = canvas.getContext('2d');
     const scoreDisplay = gid('score');
     const choicesContainer = gid('choices');
-    const maxScore = 5;
+    const maxScore = 10;
 
     const fireworksCanvas = gid('fireworksCanvas');
     const fireworksCtx = fireworksCanvas.getContext('2d');
 
+    const starbarCanvas = gid('starbarCanvas');
+    const starbarCtx = starbarCanvas.getContext('2d');
+
+    const staffTop=55;
+    let xoffset=160;
+    const yStep=10;
+
     function resizeCanvas() {
       fireworksCanvas.width = window.innerWidth;
       fireworksCanvas.height = window.innerHeight;
+      canvas.width=canvas.getBoundingClientRect().width;
+      xoffset=canvas.width/2;
+      canvas.height=canvas.getBoundingClientRect().height;
+
     }
     resizeCanvas();
 
@@ -29,22 +40,21 @@ window.onload = function() {
     //window.addEventListener('resize', resizeCanvas);
 
 
-    const staffTop=30;
-    const xoffset=160;
-    const yStep=10;
+
 
     window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext;
     const audioContext=new window.AudioContext();
 
     let score = 0;
+    let starscore = 0;
     const noteMap = ['C','D','E','F','G','A','B'];
 
     const maxOctave=4;//5;
     const minOctave=1;//0;
 
     function generateNote(){
-        let note = noteMap[Math.round(Math.random() * (noteMap.length-1))];
-        const oct = Math.round(Math.random()*(maxOctave-minOctave))+minOctave;
+        let note = noteMap[Math.floor(Math.random() * noteMap.length)];
+        const oct = Math.floor(Math.random()*(maxOctave+1-minOctave))+minOctave;
 
         const selectedNote = {
             'noteName':note,
@@ -52,18 +62,29 @@ window.onload = function() {
         };
 
         //console.log(selectedNote);
+/*
+       return {
+            'noteName':'A',
+            'octave': 4
+        };
+*/
 
+        if(document.previousNote == note+oct){  //prevent repeats
+            return generateNote();
+        }
+
+        document.previousNote = note+oct;
         return selectedNote;
     }
 
     const noteC3Positions = {
-        'treble': 130,
-        'bass': 10
+        'treble': 155,
+        'bass': 35
     };
 
     const clefImages = {
-        treble: {path:assetpath+'/treble.png',dim:[20,20,50,120]},
-        bass: {path:assetpath+'/bass.png',dim:[20,27,42,85]},
+        treble: {path:assetpath+'/treble.png',dim:[20,45,50,120]},
+        bass: {path:assetpath+'/bass.png',dim:[20,52,42,85]},
     };
 
 
@@ -143,7 +164,9 @@ window.onload = function() {
 
 
         // Draw the note stem
-        if (y<=90) {
+        const midline=noteC3Positions['treble']-(yStep*6);
+
+        if (y<=midline) {
             // Stem downwards
             ctx.beginPath();
             ctx.moveTo(xoffset-15, y);
@@ -178,9 +201,20 @@ window.onload = function() {
                     score++;
                     playNote(correctNoteMeta);
                     playCorrect();
+                    choicesContainer.innerHTML = '';
                     startFireworks();
                     scoreDisplay.innerText = `Score: ${score}`;
-                    startGame();
+                    moveRocket(score);  
+                    if(score>=maxScore){
+                        setTimeout(function(){
+                            completeStage();
+                            score=0;
+                            moveRocket(score);
+                            scoreDisplay.innerText = `Score: ${score}`;
+                        },1000);
+                    }else{  
+                        startGame();
+                    }
                 } else {
                     playWrong();
                     startRedAlert(5);
@@ -188,16 +222,9 @@ window.onload = function() {
                         score--; 
                         scoreDisplay.innerText = `Score: ${score}`;
                     }
+                    moveRocket(score);  
                 }
-                moveRocket(score);  
-                if(score>=maxScore){
-                    completeStage();
-                    setTimeout(function(){
-                        score=0;
-                        moveRocket(score);
-                        scoreDisplay.innerText = `Score: ${score}`;
-                    },1000);
-                }              
+            
             };
             choicesContainer.appendChild(button);
         });
@@ -205,9 +232,10 @@ window.onload = function() {
 
 
     function completeStage(){
-        requestAnimationFrame(StarDrawer.animate);
-
-
+        starscore++;
+        StarDrawer.startAnimation(function(){
+            startGame();
+        });
     }
 
     function startFireworks() {
@@ -350,17 +378,29 @@ window.onload = function() {
         o.stop(c.currentTime+ts);
     }
 
-    function drawStarBar(){
-        //StarDrawer.drawStar(ctx, centerX, centerY, outerRadius);
-    }
-
-
     function startGame() {
-        //animate();
+        //console.log('starscore',starscore);
+        drawStarBar();
         drawStaff();
         const correctNoteMeta=generateNote();
         drawNoteAndClef(correctNoteMeta);
         displayChoices(correctNoteMeta);
+    }
+
+    function drawStarBar(){
+        const xoffset=10;
+        const xspacing=5;
+        const yoffset=10;
+        const starwidth=20;
+        let fillstar=starscore;
+        let nofill=true;
+        for(let i=0;i<5;i++){
+            if(fillstar>0) nofill=false;
+            StarDrawer.drawStar(starbarCtx, xoffset+starwidth+(i*starwidth*2)+(i*xspacing), yoffset+starwidth, starwidth, starwidth/2,'#FFD700','#FFD700',1, nofill, nofill);
+            nofill=true;
+            fillstar--;
+        }
+
     }
 
     StarDrawer.ctx=fireworksCtx;
@@ -372,13 +412,14 @@ window.onload = function() {
 
 StarDrawer={
     // Animation parameters
-    maxScale : 5, // Maximum scale the star will reach
+    maxScale : 4, // Maximum scale the star will reach
     animationDuration : 1000, // Animation duration in milliseconds
     // Star Drawing Parameters
     defaultFill : '#FFD700',
     defaultStroke: '#DAA520',
     defaultInnerOuterRatio: 0.5,
     defaultNumOfSpikes: 5,
+    defaultLineWidth: 5,
 
     ctx: null,
     canvas: null,
@@ -388,8 +429,9 @@ StarDrawer={
     reset : function (){
         StarDrawer.startTime=null;
         StarDrawer.scale=0.1;
+        StarDrawer.ctx.clearRect(0, 0, StarDrawer.canvas.width, StarDrawer.canvas.height);        
     },
-    drawStar: function (ctx, cx, cy, outerRadius, innerRadius, fillStyle, strokeStyle, spikes) {
+    drawStar: function (ctx, cx, cy, outerRadius, innerRadius, fillStyle, strokeStyle, lineWidth, nofill, dashed, spikes) {
 
         if(!fillStyle){
             fillStyle = StarDrawer.defaultFill;
@@ -403,12 +445,16 @@ StarDrawer={
         if(!spikes){
             spikes = StarDrawer.defaultNumOfSpikes;
         }
+        if(!lineWidth){
+            lineWidth = StarDrawer.defaultLineWidth;
+        }
 
         let rot = Math.PI / 2 * 3;
         let x = cx;
         let y = cy;
         const step = Math.PI / spikes;
         ctx.beginPath();
+        if(dashed) ctx.setLineDash([2, 4]);
         ctx.moveTo(cx, cy - outerRadius);
         for (let i = 0; i < spikes; i++) {
             x = cx + Math.cos(rot) * outerRadius;
@@ -423,10 +469,12 @@ StarDrawer={
         }
         ctx.lineTo(cx, cy - outerRadius);
         ctx.closePath();
-        ctx.fillStyle = fillStyle;
-        ctx.fill();
+        if(!nofill){
+            ctx.fillStyle = fillStyle;
+            ctx.fill();
+        }
         ctx.strokeStyle = strokeStyle;
-        ctx.lineWidth = 5;
+        ctx.lineWidth = lineWidth;
         ctx.stroke();
     },
     easeOutBack: function(t) {
@@ -434,40 +482,46 @@ StarDrawer={
         const c3 = c1 + 1;
         return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t -1, 2);
     },
-    animate(timestamp) {
-        let ctx=StarDrawer.ctx;
-        let canvas=StarDrawer.canvas;
-        if (!StarDrawer.startTime) StarDrawer.startTime = timestamp;
-        const elapsed = timestamp - StarDrawer.startTime;
-        const progress = Math.min(elapsed / StarDrawer.animationDuration, 1);
-        const easedProgress = StarDrawer.easeOutBack(progress);
+    startAnimation(callback) {
+        function animate(timestamp){
+            let ctx=StarDrawer.ctx;
+            let canvas=StarDrawer.canvas;
+            if (!StarDrawer.startTime) StarDrawer.startTime = timestamp;
+            const elapsed = timestamp - StarDrawer.startTime;
+            const progress = Math.min(elapsed / StarDrawer.animationDuration, 1);
+            const easedProgress = StarDrawer.easeOutBack(progress);
 
-        const opacity = 1 * progress;
-        // Clear the canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        //ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
-        //ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const opacity = 1 * progress;
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            //ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+            //ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Calculate the current scale based on easing
-        StarDrawer.scale = 0.1 + (StarDrawer.maxScale - 0.1) * easedProgress;
+            // Calculate the current scale based on easing
+            StarDrawer.scale = 0.1 + (StarDrawer.maxScale - 0.1) * easedProgress;
 
-        // Draw the star at the center of the canvas
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const outerRadius = 50 * StarDrawer.scale; // Adjust size as needed
+            // Draw the star at the center of the canvas
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const outerRadius = 50 * StarDrawer.scale; // Adjust size as needed
 
-        // Optional: Add glow effect
-        ctx.save();
-        ctx.shadowColor = 'rgba(255, 223, 0, 0.8)'; // Golden glow
-        ctx.shadowBlur = 20 * StarDrawer.scale;
-        StarDrawer.drawStar(ctx, centerX, centerY, outerRadius);
-        ctx.restore();
-        // Continue the animation if not complete
-        if (progress < 1) {
-            requestAnimationFrame(StarDrawer.animate);
-        }else{
-            StarDrawer.reset();
+            // Optional: Add glow effect
+            ctx.save();
+            ctx.shadowColor = 'rgba(255, 223, 0, 0.8)'; // Golden glow
+            ctx.shadowBlur = 20 * StarDrawer.scale;
+            StarDrawer.drawStar(ctx, centerX, centerY, outerRadius);
+            ctx.restore();
+            // Continue the animation if not complete
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }else{
+                StarDrawer.reset();
+                if(callback && typeof callback === "function"){
+                    callback();
+                }
+            }
         }
-    }   
+        requestAnimationFrame(animate);
+    }
 };
 
