@@ -122,4 +122,23 @@ canvas {
     z-index:99;
 }
 
+#settingsdiv{
+    position:absolute;
+    padding:5px;
+    right:0px;
+    top:0px;
+    z-index:100;
+    color:#FFFFFF;
+}
+
+.gearicon{
+    cursor: pointer;
+}
+
+a, a:link, a:visited, a:hover {
+    text-decoration: none;
+    color:inherit;
+}
+
+
 

@@ -1,0 +1,15 @@
+services:
+  musicnotegame:
+    container_name: musicnotegame
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/var/www/musicnotegame
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "80:80"
+      - "9006:3306"
+    networks:
+      - default
+

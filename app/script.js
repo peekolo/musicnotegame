@@ -22,10 +22,6 @@ window.onload = function() {
     const starbarCanvas = gid('starbarCanvas');
     const starbarCtx = starbarCanvas.getContext('2d');
 
-    const staffTop=55;
-    let xoffset=160;
-    const yStep=10;
-
     function resizeCanvas() {
       fireworksCanvas.width = window.innerWidth;
       fireworksCanvas.height = window.innerHeight;
@@ -82,106 +78,9 @@ window.onload = function() {
         'bass': 35
     };
 
-    const clefImages = {
-        treble: {path:assetpath+'/treble.png',dim:[20,45,50,120]},
-        bass: {path:assetpath+'/bass.png',dim:[20,52,42,85]},
-    };
 
 
-    function drawStaff() {
-        const staffSpacing = yStep * 2;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < 5; i++) {
-            ctx.beginPath();
-            ctx.moveTo(10, staffTop + i * staffSpacing);
-            ctx.lineTo(canvas.width-10, staffTop + i * staffSpacing);
-            ctx.stroke();
-        }
-    }
-
-    function drawClef(clef) {
-        const clefImage = new Image();
-        clefImage.src = clefImages[clef]['path'];
-        const dim = clefImages[clef]['dim'];
-
-        clefImage.onload = function() {
-            ctx.drawImage(clefImage, ...dim);
-        };
-    }
-
-    function drawNoteAndClef(noteMeta,clef){
-        const middleCoctave=3;
-        const octave=noteMeta.octave;
-        const notename=noteMeta.noteName;
-        
-        if(!clef){
-            if(octave>=middleCoctave){
-                clef='treble';
-            }else{
-                clef='bass';
-            }
-        }
-
-        const c3position=noteC3Positions[clef];
-
-        //calc number of steps from C3
-        const noteSteps=noteMap.indexOf(notename);
-        const octSteps=octave-middleCoctave;
-        const numPerOct=noteMap.length;
-
-
-
-        const deltaY=((octSteps*numPerOct)+noteSteps)*yStep;
-
-        const y=c3position-deltaY;
-
-        //console.log(octSteps,numPerOct,noteSteps,c3position,y);
-
-        //draw ledger lines below staff
-        let ledger_y = noteC3Positions['treble'];
-        while (y>=ledger_y){
-            ctx.beginPath();
-            ctx.moveTo(xoffset-23,ledger_y);
-            ctx.lineTo(xoffset+23,ledger_y);
-            ctx.stroke();
-            ledger_y+=(yStep*2);
-        }
-
-        //draw ledger lines above staff
-        ledger_y = noteC3Positions['bass'];
-        while (y<=ledger_y){
-            ctx.beginPath();
-            ctx.moveTo(xoffset-23,ledger_y);
-            ctx.lineTo(xoffset+23,ledger_y);
-            ctx.stroke();
-            ledger_y-=(yStep*2);
-        }
-
-        ctx.beginPath();
-        ctx.ellipse(xoffset, y, 1.5*yStep, yStep, 0, 0, 2 * Math.PI);
-        ctx.fill();
-
-
-        // Draw the note stem
-        const midline=noteC3Positions['treble']-(yStep*6);
-
-        if (y<=midline) {
-            // Stem downwards
-            ctx.beginPath();
-            ctx.moveTo(xoffset-15, y);
-            ctx.lineTo(xoffset-15, y + 63);
-        } else {
-            // Stem upwards
-            ctx.beginPath();
-            ctx.moveTo(xoffset+15, y);
-            ctx.lineTo(xoffset+15, y - 63);
-        }
-        ctx.stroke();
-
-        drawClef(clef);
-
-    }
+    
 
     function displayChoices(correctNoteMeta) {
         const correctNote = correctNoteMeta.noteName;
@@ -206,9 +105,9 @@ window.onload = function() {
                     scoreDisplay.innerText = `Score: ${score}`;
                     moveRocket(score);  
                     if(score>=maxScore){
+                        completeStage();
+                        score=0;
                         setTimeout(function(){
-                            completeStage();
-                            score=0;
                             moveRocket(score);
                             scoreDisplay.innerText = `Score: ${score}`;
                         },1000);
@@ -233,9 +132,7 @@ window.onload = function() {
 
     function completeStage(){
         starscore++;
-        StarDrawer.startAnimation(function(){
-            startGame();
-        });
+        StarDrawer.startAnimation(startGame);
     }
 
     function startFireworks() {
@@ -381,9 +278,9 @@ window.onload = function() {
     function startGame() {
         //console.log('starscore',starscore);
         drawStarBar();
-        drawStaff();
+        MusicNoteDrawer.drawStaff(ctx,canvas);
         const correctNoteMeta=generateNote();
-        drawNoteAndClef(correctNoteMeta);
+        MusicNoteDrawer.drawNoteAndClef(ctx,correctNoteMeta);
         displayChoices(correctNoteMeta);
     }
 
@@ -408,6 +305,121 @@ window.onload = function() {
 
     startGame();
 };
+
+
+MusicNoteDrawer={
+    'staffTop': 55,
+    'xoffset':160,
+    'yStep':10,
+    'noteC3Positions': {
+        'treble': 155,
+        'bass': 35
+    },
+    'noteMap': ['C','D','E','F','G','A','B'],
+    'clefImages' :{
+        treble: {path:'images/treble.png',dim:[20,45,50,120]},
+        bass: {path:'images/bass.png',dim:[20,52,42,85]},
+    },
+    'drawNoteAndClef': function(ctx,noteMeta,clef){
+        const middleCoctave=3;
+        const octave=noteMeta.octave;
+        const notename=noteMeta.noteName;
+        
+        if(!clef){
+            if(octave>=middleCoctave){
+                clef='treble';
+            }else{
+                clef='bass';
+            }
+        }
+
+        const c3position=MusicNoteDrawer.noteC3Positions[clef];
+
+        //calc number of steps from C3
+        const noteSteps=MusicNoteDrawer.noteMap.indexOf(notename);
+        const octSteps=octave-middleCoctave;
+        const numPerOct=MusicNoteDrawer.noteMap.length;
+
+        const yStep=MusicNoteDrawer.yStep;
+
+
+        const deltaY=((octSteps*numPerOct)+noteSteps)*yStep;
+
+        const y=c3position-deltaY;
+
+        //console.log(octSteps,numPerOct,noteSteps,c3position,y);
+
+        //draw ledger lines below staff
+        let ledger_y = MusicNoteDrawer.noteC3Positions['treble'];
+        while (y>=ledger_y){
+            ctx.beginPath();
+            ctx.moveTo(MusicNoteDrawer.xoffset-23,ledger_y);
+            ctx.lineTo(MusicNoteDrawer.xoffset+23,ledger_y);
+            ctx.stroke();
+            ledger_y+=(yStep*2);
+        }
+
+        //draw ledger lines above staff
+        ledger_y = MusicNoteDrawer.noteC3Positions['bass'];
+        while (y<=ledger_y){
+            ctx.beginPath();
+            ctx.moveTo(MusicNoteDrawer.xoffset-23,ledger_y);
+            ctx.lineTo(MusicNoteDrawer.xoffset+23,ledger_y);
+            ctx.stroke();
+            ledger_y-=(yStep*2);
+        }
+
+        ctx.beginPath();
+        ctx.ellipse(MusicNoteDrawer.xoffset, y, 1.5*yStep, yStep, 0, 0, 2 * Math.PI);
+        ctx.fill();
+
+
+        // Draw the note stem
+        const midline=MusicNoteDrawer.noteC3Positions['treble']-(yStep*6);
+
+        if (y<=midline) {
+            // Stem downwards
+            ctx.beginPath();
+            ctx.moveTo(MusicNoteDrawer.xoffset-15, y);
+            ctx.lineTo(MusicNoteDrawer.xoffset-15, y + 63);
+        } else {
+            // Stem upwards
+            ctx.beginPath();
+            ctx.moveTo(MusicNoteDrawer.xoffset+15, y);
+            ctx.lineTo(MusicNoteDrawer.xoffset+15, y - 63);
+        }
+        ctx.stroke();
+
+        MusicNoteDrawer.drawClef(ctx,clef);
+
+    },
+    'drawStaff':function(ctx,canvas) {
+        const yStep=MusicNoteDrawer.yStep;
+        const staffTop=MusicNoteDrawer.staffTop;
+        const staffSpacing = yStep * 2;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.moveTo(10, staffTop + i * staffSpacing);
+            ctx.lineTo(canvas.width-10, staffTop + i * staffSpacing);
+            ctx.stroke();
+        }
+    },
+    'drawClef':function(ctx,clef) {
+        const clefImages=MusicNoteDrawer.clefImages;
+        const clefImage = new Image();
+        clefImage.src = clefImages[clef]['path'];
+        const dim = clefImages[clef]['dim'];
+
+        clefImage.onload = function() {
+            ctx.drawImage(clefImage, ...dim);
+        };
+    }
+
+
+};
+
 
 
 StarDrawer={
