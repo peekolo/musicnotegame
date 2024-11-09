@@ -49,67 +49,23 @@ window.onload = function() {
     const minOctave=1;//0;
 
     function generateNote(){
-        let note = noteMap[Math.floor(Math.random() * noteMap.length)];
-        const oct = Math.floor(Math.random()*(maxOctave+1-minOctave))+minOctave;
+        let selectedNote={};
 
-        let selectedNote = {
-            'noteName':note,
-            'octave': oct,
-        };
+        if(DataStore && DataStore.possibleNotes.length>0){
+            selectedNote=DataStore.possibleNotes[Math.floor(Math.random() * DataStore.possibleNotes.length)];
+            note=selectedNote.noteName;
+            oct=selectedNote.octave;
 
-        const possibleNotes=[
-            {
-                'noteName':'C',
-                'octave':3,
-            },
-            {
-                'noteName':'D',
-                'octave':3,
-            },
-            {
-                'noteName':'E',
-                'octave':3,
-            },
-            {
-                'noteName':'F',
-                'octave':3,
-            },
-            {
-                'noteName':'G',
-                'octave':3,
-            },
-            {
-                'noteName':'B',
-                'octave':2,
-            },
-            {
-                'noteName':'A',
-                'octave':2,
-            },
-            {
-                'noteName':'G',
-                'octave':2,
-            },
-            {
-                'noteName':'F',
-                'octave':2,
-            },
-            {
-                'noteName':'E',
-                'octave':2,
-            },
+        }else{
+            let note = noteMap[Math.floor(Math.random() * noteMap.length)];
+            const oct = Math.floor(Math.random()*(maxOctave+1-minOctave))+minOctave;
 
-        ];
+            selectedNote = {
+                'noteName':note,
+                'octave': oct,
+            };
 
-        selectedNote=possibleNotes[Math.floor(Math.random() * possibleNotes.length)];
-
-        //console.log(selectedNote);
-/*
-       return {
-            'noteName':'A',
-            'octave': 4
-        };
-*/
+        }
 
         if(document.previousNote == note+oct){  //prevent repeats
             return generateNote();

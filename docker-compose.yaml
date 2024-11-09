@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./app:/var/www/musicnotegame
+      - ./site:/var/www/musicnotegame
       - ./mysql:/var/lib/mysql
     ports:
       - "80:80"
