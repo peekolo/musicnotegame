@@ -1,0 +1,25 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #000;
+    opacity: 1;
+    font-family: Arial, sans-serif;
+}
+
+canvas {
+    border: 1px solid #00A0F0;
+    background-color: white;
+    z-index:99;
+}
+
+#mainmusicstaff{
+    width:98%;
+}
+
+.musicstaff{
+    width:20%;
+}
