@@ -285,7 +285,7 @@ window.onload = function() {
         drawStarBar();
         MusicNoteDrawer.drawStaff(ctx,canvas);
         const correctNoteMeta=generateNote();
-        MusicNoteDrawer.drawNoteAndClef(ctx,correctNoteMeta);
+        MusicNoteDrawer.drawNoteAndClef(ctx,correctNoteMeta,correctNoteMeta.clef??null);
         displayChoices(correctNoteMeta);
     }
 
