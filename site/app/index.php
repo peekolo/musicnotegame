@@ -1,9 +1,10 @@
 <?php
 
+include_once __DIR__.'/connect.php';
 include_once __DIR__.'/helper.php';
 include_once __DIR__.'/icl/getpossiblenotes.inc.php';
 
-$token=SGET['token'];
+$token=SGET('token')??null;
 $possiblenotes=getpossiblenotes($token);
 
 ?>
@@ -38,55 +39,12 @@ $possiblenotes=getpossiblenotes($token);
     <script>
         DataStore={
             'possibleNotes': <?echo json_encode($possiblenotes);?>
-
-            /*[
-                {
-                    'noteName':'C',
-                    'octave':3,
-                },
-                {
-                    'noteName':'D',
-                    'octave':3,
-                },
-                {
-                    'noteName':'E',
-                    'octave':3,
-                },
-                {
-                    'noteName':'F',
-                    'octave':3,
-                },
-                {
-                    'noteName':'G',
-                    'octave':3,
-                },
-                {
-                    'noteName':'B',
-                    'octave':2,
-                },
-                {
-                    'noteName':'A',
-                    'octave':2,
-                },
-                {
-                    'noteName':'G',
-                    'octave':2,
-                },
-                {
-                    'noteName':'F',
-                    'octave':2,
-                },
-                {
-                    'noteName':'E',
-                    'octave':2,
-                },
-            ],*/
         };
     </script>
 
-    <script src="core.js?v=4"></script>    
-    <script src="lib.js?v=4"></script>
-    <script src="script.js?v=4"></script>
+    <script src="core.js?v=5"></script>    
+    <script src="lib.js?v=5"></script>
+    <script src="script.js?v=5"></script>
 </body>
 </html>
 

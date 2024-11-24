@@ -48,27 +48,30 @@ window.onload = function() {
     const maxOctave=4;//5;
     const minOctave=1;//0;
 
-    function generateNote(){
+    function generateNote(attempt){
+
+        if(!attempt){
+            attempt=0;
+        }
+
         let selectedNote={};
+        let note,oct;
 
         if(DataStore && DataStore.possibleNotes.length>0){
             selectedNote=DataStore.possibleNotes[Math.floor(Math.random() * DataStore.possibleNotes.length)];
             note=selectedNote.noteName;
             oct=selectedNote.octave;
-
         }else{
-            let note = noteMap[Math.floor(Math.random() * noteMap.length)];
-            const oct = Math.floor(Math.random()*(maxOctave+1-minOctave))+minOctave;
-
+            note = noteMap[Math.floor(Math.random() * noteMap.length)];
+            oct = Math.floor(Math.random()*(maxOctave+1-minOctave))+minOctave;
             selectedNote = {
                 'noteName':note,
                 'octave': oct,
             };
 
         }
-
-        if(document.previousNote == note+oct){  //prevent repeats
-            return generateNote();
+        if(attempt<5 && document.previousNote == note+oct){  //prevent repeats and infinite loops
+            return generateNote(++attempt);
         }
 
         document.previousNote = note+oct;

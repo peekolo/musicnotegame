@@ -4,6 +4,7 @@ MusicNoteDrawer={
     'staffTop': 55,
     'xoffset':160,
     'yStep':10,
+    'stretch':1.5,
     'noteC3Positions': {
         'treble': 155,
         'bass': 35
@@ -13,11 +14,34 @@ MusicNoteDrawer={
         treble: {path:'images/treble.png',dim:[20,45,50,120]},
         bass: {path:'images/bass.png',dim:[20,52,42,85]},
     },
-    
-    'drawNoteAndClef': function(ctx,noteMeta,clef){
+    'init': function(clefImages,staffTop,xoffset,stretch,yStep){
+        //if(noteC3Positions != null) this.noteC3Positions=noteC3Positions;
+        if(stretch != null) this.stretch=stretch;
+        if(clefImages != null) this.clefImages=clefImages;
+        if(staffTop != null){
+            const diff=this.staffTop-staffTop;
+            this.staffTop=staffTop;
+            this.noteC3Positions.treble-=diff;
+            this.noteC3Positions.bass-=diff;
+        }
+        if(xoffset != null) this.xoffset=xoffset;
+        if(yStep != null){
+            this.yStep=yStep;
+        }
+
+        this.noteC3Positions.treble=this.staffTop+(10*this.yStep);
+        this.noteC3Positions.bass=this.staffTop-(2*this.yStep);
+
+    },
+    'drawNote': function(ctx,noteMeta,clef, numnotesoffset,color){
+        return this.drawNoteAndClef(ctx,noteMeta,clef,true, numnotesoffset,color);
+    },
+    'drawNoteAndClef': function(ctx,noteMeta,clef, noclef, numnotesoffset,color){
         const middleCoctave=3;
         const octave=noteMeta.octave;
         const notename=noteMeta.noteName;
+
+        if(!numnotesoffset) numnotesoffset=0;
         
         if(!clef){
             if(octave>=middleCoctave){
@@ -36,7 +60,6 @@ MusicNoteDrawer={
 
         const yStep=this.yStep;
 
-
         const deltaY=((octSteps*numPerOct)+noteSteps)*yStep;
 
         const y=c3position-deltaY;
@@ -45,10 +68,24 @@ MusicNoteDrawer={
 
         //draw ledger lines below staff
         let ledger_y = this.noteC3Positions['treble'];
+
+        const yradius=yStep*this.stretch;
+
+        const mainxoffset=numnotesoffset * (yradius*5);
+
+        const xstart = mainxoffset+this.xoffset;
+
+        if(!color){
+            color='black';
+        }
+
+        ctx.fillStyle=color;
+        ctx.strokeStyle=color;
+
         while (y>=ledger_y){
             ctx.beginPath();
-            ctx.moveTo(this.xoffset-23,ledger_y);
-            ctx.lineTo(this.xoffset+23,ledger_y);
+            ctx.moveTo(xstart-(yradius*1.8),ledger_y);
+            ctx.lineTo(xstart+(yradius*1.8),ledger_y);
             ctx.stroke();
             ledger_y+=(yStep*2);
         }
@@ -57,14 +94,14 @@ MusicNoteDrawer={
         ledger_y = this.noteC3Positions['bass'];
         while (y<=ledger_y){
             ctx.beginPath();
-            ctx.moveTo(this.xoffset-23,ledger_y);
-            ctx.lineTo(this.xoffset+23,ledger_y);
+            ctx.moveTo(xstart-(yradius*1.8),ledger_y);
+            ctx.lineTo(xstart+(yradius*1.8),ledger_y);
             ctx.stroke();
             ledger_y-=(yStep*2);
         }
 
         ctx.beginPath();
-        ctx.ellipse(this.xoffset, y, 1.5*yStep, yStep, 0, 0, 2 * Math.PI);
+        ctx.ellipse(xstart, y, yradius, yStep, 0, 0, 2 * Math.PI);
         ctx.fill();
 
 
@@ -74,17 +111,25 @@ MusicNoteDrawer={
         if (y<=midline) {
             // Stem downwards
             ctx.beginPath();
-            ctx.moveTo(this.xoffset-15, y);
-            ctx.lineTo(this.xoffset-15, y + 63);
+            ctx.moveTo(xstart-yradius, y);
+            ctx.lineTo(xstart-yradius, y + (6.5*yStep));
         } else {
             // Stem upwards
             ctx.beginPath();
-            ctx.moveTo(this.xoffset+15, y);
-            ctx.lineTo(this.xoffset+15, y - 63);
+            ctx.moveTo(xstart+yradius, y);
+            ctx.lineTo(xstart+yradius, y - (6.5*yStep));
         }
         ctx.stroke();
 
-        this.drawClef(ctx,clef);
+        if(!noclef){
+            this.drawClef(ctx,clef);
+        }
+
+        return {
+            'x':xstart-yradius,
+            'y':y-(yradius*2),
+            'radius':yradius,
+        };
 
     },
     'drawStaff':function(ctx,canvas) {
