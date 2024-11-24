@@ -8,6 +8,13 @@ window.onload = function() {
     ];
 
 
+    const keys = document.querySelectorAll('.white-key, .black-key');
+    keys.forEach(key => {
+        key.addEventListener('click', () => {
+            const noteName = key.getAttribute('data-note')[0];
+            getChoicefunc(noteName,document.correctNoteMeta)();
+        });
+    });
 
     const assetpath = 'images';
     const canvas = gid('musicCanvas');
@@ -84,8 +91,39 @@ window.onload = function() {
     };
 
 
+    function getChoicefunc(option,correctNoteMeta){
+        const correctNote = correctNoteMeta.noteName;
 
-    
+        return function(){
+            if (option === correctNote) {
+                score++;
+                playNote(correctNoteMeta);
+                playCorrect();
+                choicesContainer.innerHTML = '';
+                startFireworks();
+                scoreDisplay.innerText = `Score: ${score}`;
+                moveRocket(score);  
+                if(score>=maxScore){
+                    completeStage();
+                    score=0;
+                    setTimeout(function(){
+                        moveRocket(score);
+                        scoreDisplay.innerText = `Score: ${score}`;
+                    },1000);
+                }else{  
+                    startGame();
+                }
+            } else {
+                playWrong();
+                startRedAlert(5);
+                if(score>0){
+                    score--; 
+                    scoreDisplay.innerText = `Score: ${score}`;
+                }
+                moveRocket(score);  
+            }
+        }
+    }
 
     function displayChoices(correctNoteMeta) {
         const correctNote = correctNoteMeta.noteName;
@@ -100,36 +138,7 @@ window.onload = function() {
             const button = document.createElement('button');
             button.innerText = option;
             button.classList.add('choice-button');
-            button.onclick = function() {
-                if (option === correctNote) {
-                    score++;
-                    playNote(correctNoteMeta);
-                    playCorrect();
-                    choicesContainer.innerHTML = '';
-                    startFireworks();
-                    scoreDisplay.innerText = `Score: ${score}`;
-                    moveRocket(score);  
-                    if(score>=maxScore){
-                        completeStage();
-                        score=0;
-                        setTimeout(function(){
-                            moveRocket(score);
-                            scoreDisplay.innerText = `Score: ${score}`;
-                        },1000);
-                    }else{  
-                        startGame();
-                    }
-                } else {
-                    playWrong();
-                    startRedAlert(5);
-                    if(score>0){
-                        score--; 
-                        scoreDisplay.innerText = `Score: ${score}`;
-                    }
-                    moveRocket(score);  
-                }
-            
-            };
+            button.onclick = getChoicefunc(option,correctNoteMeta);
             choicesContainer.appendChild(button);
         });
     }
@@ -285,6 +294,7 @@ window.onload = function() {
         drawStarBar();
         MusicNoteDrawer.drawStaff(ctx,canvas);
         const correctNoteMeta=generateNote();
+        document.correctNoteMeta=correctNoteMeta;
         MusicNoteDrawer.drawNoteAndClef(ctx,correctNoteMeta,correctNoteMeta.clef??null);
         displayChoices(correctNoteMeta);
     }

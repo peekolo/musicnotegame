@@ -2,10 +2,21 @@
 
 include_once __DIR__.'/connect.php';
 include_once __DIR__.'/helper.php';
+include_once __DIR__.'/settings.php';
 include_once __DIR__.'/icl/getpossiblenotes.inc.php';
 
 $token=SGET('token')??null;
-$possiblenotes=getpossiblenotes($token);
+list(
+    'possiblenotes'=>$possiblenotes,
+    'gamemode'=>$mode,
+)=getpossiblenotes($token);
+
+
+$shownotenames=false;
+if($mode==MODE_EASYKEYBOARD){
+    $shownotenames=true;
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -35,7 +46,26 @@ $possiblenotes=getpossiblenotes($token);
     </div>
     <div id="score">Score: 0</div>
     <canvas id="musicCanvas"></canvas>
-    <div id="choices"></div>
+    <div id="choices" class="<?if($mode!=MODE_MULCHOICE && $mode!=MODE_FREE) echo 'd-none';?>"></div>
+    <div class="keyboard <?if($mode!=MODE_KEYBOARD && $mode!=MODE_EASYKEYBOARD) echo'd-none';?>" id="keyboard">
+        <!-- White Keys -->
+        <div class="white-key" data-note="C4"><?if($shownotenames) echo 'C';?></div>
+        <div class="white-key" data-note="D4"><?if($shownotenames) echo 'D';?></div>
+        <div class="white-key" data-note="E4"><?if($shownotenames) echo 'E';?></div>
+        <div class="white-key" data-note="F4"><?if($shownotenames) echo 'F';?></div>
+        <div class="white-key" data-note="G4"><?if($shownotenames) echo 'G';?></div>
+        <div class="white-key" data-note="A4"><?if($shownotenames) echo 'A';?></div>
+        <div class="white-key" data-note="B4"><?if($shownotenames) echo 'B';?></div>
+        <div class="white-key" data-note="C5"><?if($shownotenames) echo 'C';?></div>
+
+        <!-- Black Keys -->
+        <div class="black-key" data-note="C#4"></div>
+        <div class="black-key" data-note="D#4"></div>
+        <!-- Skip E# (F natural has no sharp) -->
+        <div class="black-key" data-note="F#4"></div>
+        <div class="black-key" data-note="G#4"></div>
+        <div class="black-key" data-note="A#4"></div>
+    </div>
     <script>
         DataStore={
             'possibleNotes': <?echo json_encode($possiblenotes);?>

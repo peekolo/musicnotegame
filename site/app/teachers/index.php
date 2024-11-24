@@ -1,7 +1,7 @@
 <?php
 
 include_once __DIR__.'/../connect.php';
-
+include_once __DIR__.'/../settings.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +12,9 @@ include_once __DIR__.'/../connect.php';
     <link rel="stylesheet" href="styles.css">
 </head>
 <style>
+    body{
+        color:#FFF;
+    }
 	.longstave{
 		height:200px;
 		width:1000px;
@@ -35,6 +38,10 @@ include_once __DIR__.'/../connect.php';
         pointer-events: none;
 
     }
+    button {
+        padding:10px;
+        cursor: pointer;
+    }
 </style>
 <body>
 	<div class="outerdiv">
@@ -44,6 +51,19 @@ include_once __DIR__.'/../connect.php';
 	    <div id="bassholder" class="staveholder">
 	    	<canvas class="longstave" id="mainmusicstaff_bass"></canvas>
 	    </div>
+        <div style="text-align:center;padding:10px;margin-bottom:10px;">
+            <input type="radio" name="mode" id="radio_modemulchoice" 
+            onclick="if(this.checked){gid('gamemode').value=<?echo MODE_MULCHOICE;?>;}" checked>
+            <label for="radio_modemulchoice">Multiple Choice</label>
+            
+            <input type="radio" name="mode" id="radio_modeezkeyboard" onclick="if(this.checked){gid('gamemode').value=<?echo MODE_EASYKEYBOARD;?>;}" >
+            <label for="radio_modeezkeyboard">Keyboard with Notenames</label>
+
+            <input type="radio" name="mode" id="radio_modekeyboard" onclick="if(this.checked){gid('gamemode').value=<?echo MODE_KEYBOARD;?>;}" >
+            <label for="radio_modekeyboard">Keyboard</label>
+
+            <input type="hidden" id="gamemode" value="0">
+        </div>
 	    <div style="text-align: center;">
 	    	<div>
                 <button onclick="generateurl();">Generate URL</button>
@@ -176,6 +196,7 @@ include_once __DIR__.'/../connect.php';
 			}
 
 			let data='selectednotes='+JSON.stringify(selectedNotes);
+            data=data+'&gamemode='+gid('gamemode').value;
 			let u='router.php?cmd=genurl';
 			ajxnb(u,data,f);
 

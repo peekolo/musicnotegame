@@ -4,15 +4,16 @@
 function genurl(){
 	global $db;
 	$selectednotes=SQET('selectednotes');
+	$gamemode=QETVAL('gamemode');
 	//$selectednotes=json_decode($selectednotes,true);
 
 	$now=time();
 	$salt='qweoij@!$as90';
 
 
-	$query="insert into possiblenotes (token,possiblenotesjson) VALUES (?,?)";
+	$query="insert into possiblenotes (token,possiblenotesjson,gamemode) VALUES (?,?,?)";
 	$rs=sql_prep($query,$db,array(
-		0,$selectednotes
+		0,$selectednotes,$gamemode
 	));
 	$id=sql_insert_id($db,$rs);
 

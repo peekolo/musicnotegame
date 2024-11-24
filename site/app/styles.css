@@ -140,5 +140,63 @@ a, a:link, a:visited, a:hover {
     color:inherit;
 }
 
+.keyboard {
+    display: flex;
+    position: relative;
+    width: 420px;
+    height: 200px;
+}
+
+.white-key {
+    width: 60px;
+    height: 200px;
+    background: white;
+    border: 1px solid black;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.black-key {
+    width: 40px;
+    height: 120px;
+    background: black;
+    border: 1px solid black;
+    position: absolute;
+    z-index: 2;
+    margin-left: -20px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.black-key[data-note="C#4"] {
+    left: 50px;
+}
+
+.black-key[data-note="D#4"] {
+    left: 105px;
+}
+
+.black-key[data-note="F#4"] {
+    left: 210px;
+}
+
+.black-key[data-note="G#4"] {
+    left: 262px;
+}
+
+.black-key[data-note="A#4"] {
+    left: 315px;
+}
+
+.d-none{
+    display: none!important;
+}
 
 

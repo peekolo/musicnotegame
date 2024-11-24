@@ -4,7 +4,10 @@ function getpossiblenotes($token=null){
 	global $db;
 	if(!$token){
 		$getpossiblenotes=array();
-		return $getpossiblenotes;
+		return array(
+			'possiblenotes'=>$getpossiblenotes,
+			'gamemode'=>MODE_FREE,
+		);
 	}
 
 	$query="select * from possiblenotes where token=?";
@@ -12,8 +15,12 @@ function getpossiblenotes($token=null){
 	$myrow=sql_fetch_assoc($rs);
 
 	$getpossiblenotes=json_decode($myrow['possiblenotesjson'],1);
+	$gamemode=intval($myrow['gamemode']);
 
-	return $getpossiblenotes;
+	return array(
+		'possiblenotes'=>$getpossiblenotes,
+		'gamemode'=>$gamemode,
+	);
 }
 
 /*

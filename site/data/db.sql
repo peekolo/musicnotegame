@@ -6,3 +6,5 @@ CREATE TABLE `possiblenotes`(
 	`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`possiblenotesid`)
 );
+
+ALTER TABLE `possiblenotes` ADD COLUMN `gamemode` tinyint(3) unsigned default 0;
