@@ -42,9 +42,9 @@ $possiblenotes=getpossiblenotes($token);
         };
     </script>
 
-    <script src="core.js?v=5"></script>    
-    <script src="lib.js?v=5"></script>
-    <script src="script.js?v=5"></script>
+    <script src="core.js?v=6"></script>    
+    <script src="lib.js?v=6"></script>
+    <script src="script.js?v=6"></script>
 </body>
 </html>
 
